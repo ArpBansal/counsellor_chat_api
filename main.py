@@ -1,22 +1,22 @@
-from fastapi import FastAPI, WebSocket
-from fastapi.middleware.cors import CORSMiddleware
-# models.Base.metadata.create_all(bind=engine)
+from flask import Flask, request, jsonify
 
-app = FastAPI()
+app = Flask(__name__)
 
-origins = []
+@app.route('/')
+def index():
+    return "Hello, this is the AI chat API for Ollama."
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*",]
-)
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_message = data.get('message')
+    # integrate your AI model to generate a response
+    ai_response = generate_response(user_message)
+    return jsonify({"response": ai_response})
 
-@app.websocket
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was {data}")
+def generate_response(user_message):
+    # Placeholder function for AI model integration
+    return f"Echo: {user_message}"
+
+if __name__ == '__main__':
+    app.run(debug=True)
